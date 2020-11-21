@@ -300,8 +300,8 @@ bool CollisionManager::circleAABBCheck(GameObject* object1, GameObject* object2)
 
 bool CollisionManager::pointRectCheck(const glm::vec2 point, const glm::vec2 rect_start, const float rect_width, const float rect_height)
 {
-	const float topLeftX = rect_start.x - rect_width * 0.5;
-	const float topLeftY = rect_start.y - rect_height * 0.5;
+	const float topLeftX = rect_start.x;// -rect_width * 0.5;
+	const float topLeftY = rect_start.y; // -rect_height * 0.5;
 	const auto width = rect_width;
 	const auto height = rect_height;
 

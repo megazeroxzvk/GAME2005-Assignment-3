@@ -3,6 +3,7 @@
 #define __PLAY_SCENE__
 
 #include "Background.h"
+#include "Bullet.h"
 #include "Scene.h"
 #include "Plane.h"
 #include "Player.h"
@@ -12,6 +13,8 @@
 #include "Label.h"
 #include "Ramp.h"
 #include "Lootbox.h"
+#include "Jet.h"
+#include "BulletPool.h"
 #include "ThermalDetonator.h"
 #include "StormTroopers.h"
 
@@ -46,20 +49,20 @@ private:
 	// Sprites
 	Ramp* m_pRamp;
 	Lootbox* m_pLootbox;
+	Jet* m_pJet;
 
+	// Bullet / BulletPool
+	BulletPool* m_pBulletPool;
+	const float delay = 0.4f;
+	float bulletSpawnTimer = 0;
+
+	
 	// UI Items
 	Button* m_pThrowButton;
 	Button* m_pResetButton;
 	Label* m_pInstructionsLabel;
 
 	//Status Labels
-	Label* m_pVelocityLabel;
-	Label* m_pAngleLabel;
-	Label* m_pTotalDistance;
-	Label* m_pAccelerationLabel;
-	Label* m_pMass;
-	Label* m_pForce;
-	Label* m_pPPM;
 
 
 	mutable bool reset = false;

@@ -162,8 +162,11 @@
     <ClCompile Include="..\include\IMGUI\imgui_widgets.cpp" />
     <ClCompile Include="..\include\IMGUI_SDL\imgui_sdl.cpp" />
     <ClCompile Include="..\src\Background.cpp" />
+    <ClCompile Include="..\src\Bullet.cpp" />
+    <ClCompile Include="..\src\BulletPool.cpp" />
     <ClCompile Include="..\src\Button.cpp" />
     <ClCompile Include="..\src\CollisionManager.cpp" />
+    <ClCompile Include="..\src\Jet.cpp" />
     <ClCompile Include="..\src\Lootbox.cpp" />
     <ClCompile Include="..\src\PlayScene2.cpp" />
     <ClCompile Include="..\src\Ramp.cpp" />
@@ -204,10 +207,13 @@
     <ClInclude Include="..\include\IMGUI_SDL\imgui_sdl.h" />
     <ClInclude Include="..\src\Animation.h" />
     <ClInclude Include="..\src\Background.h" />
+    <ClInclude Include="..\src\Bullet.h" />
+    <ClInclude Include="..\src\BulletPool.h" />
     <ClInclude Include="..\src\Button.h" />
     <ClInclude Include="..\src\CollisionManager.h" />
     <ClInclude Include="..\src\CollisionShape.h" />
     <ClInclude Include="..\src\Config.h" />
+    <ClInclude Include="..\src\Jet.h" />
     <ClInclude Include="..\src\Lootbox.h" />
     <ClInclude Include="..\src\PlayScene2.h" />
     <ClInclude Include="..\src\Ramp.h" />

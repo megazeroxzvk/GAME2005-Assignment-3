@@ -37,6 +37,11 @@ void Scene::removeChild(DisplayObject* child)
 	m_displayList.erase(std::remove(m_displayList.begin(), m_displayList.end(), child), m_displayList.end());
 }
 
+void Scene::disableChild(DisplayObject* child)
+{
+	m_displayList.erase(std::remove(m_displayList.begin(), m_displayList.end(), child), m_displayList.end());
+}
+
 void Scene::removeAllChildren()
 {
 	for (auto& count : m_displayList)
@@ -99,4 +104,9 @@ void Scene::drawDisplayList()
 		}
 	}
 
+}
+
+std::vector<DisplayObject*> Scene::getDisplayList()
+{
+	return m_displayList;
 }

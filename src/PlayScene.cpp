@@ -26,18 +26,26 @@ void PlayScene::draw()
 	{
 		GUI_Function();
 	}
+	
+	m_pBulletPool->Draw();
 }
 
 void PlayScene::update()
 {
-	updateDisplayList();
-	m_pVelocityLabel->setText("Velocity = " + std::to_string(fabs(m_pLootbox->getRigidBody()->velocity.x) / SCALE) + " m/s");
-	m_pAngleLabel->setText("Angle = " + std::to_string(m_pLootbox->getAngle()) + " deg");
-	m_pTotalDistance->setText("Total Distance = " + std::to_string(m_pLootbox->getDistance()) + " m");
-	m_pAccelerationLabel->setText("Acceleration = " + std::to_string(fabs(m_pLootbox->getRigidBody()->acceleration.y) / SCALE) + " m/s^2");
-	m_pForce->setText("Force = " + std::to_string((m_pLootbox->getForce().x / SCALE)) + " N");
-	m_pMass->setText("Mass = " + std::to_string(fabs(m_pLootbox->getMass())) + " Kg");
-	m_pPPM->setText("Scale Value: 30 Pixels = 1 Meter");
+	
+	if(!EventManager::Instance().isIMGUIActive())
+	{
+		updateDisplayList();
+	}
+
+	if((SDL_GetTicks() - bulletSpawnTimer)/1000.0f >= delay)
+	{
+		m_pBulletPool->useBulletPool();
+		bulletSpawnTimer = SDL_GetTicks();
+	}
+	m_pBulletPool->collisionCheck(m_pJet);
+	m_pBulletPool->Update();
+	
 }
 
 void PlayScene::clean()
@@ -48,7 +56,18 @@ void PlayScene::clean()
 void PlayScene::handleEvents()
 {
 	EventManager::Instance().update();
-
+	// If IMGUI is active, show mouse cursor & do not take input.
+	// Sort of a Pause State
+	if(EventManager::Instance().isIMGUIActive())
+	{
+		SDL_SetRelativeMouseMode(SDL_FALSE);
+	}
+	else	//don't show mouse cursor and take mouse Input
+	{
+		SDL_SetRelativeMouseMode(SDL_TRUE);
+		m_pJet->jetMovementHandle(EventManager::Instance().getMousePosition());
+	}
+	
 	// handle player movement with GameController
 	/*if (SDL_NumJoysticks() > 0)
 	{
@@ -117,21 +136,18 @@ void PlayScene::handleEvents()
 void PlayScene::start()
 {
 	//Set Background Tatooine
-	m_pBackground = new Background("../Assets/textures/owbkg.jpg","background_playscene");
+	m_pBackground = new Background("../Assets/textures/bkg1.jpg","background_playscene");
 	addChild(m_pBackground);
 	
 	// Set GUI Title
 	m_guiTitle = "Play Scene";
 
-	//Ramp
-	m_pRamp = new Ramp();
-	addChild(m_pRamp);
+	// Jet
+	m_pJet = new Jet();
+	addChild(m_pJet);
 
-	//Lootbox
-	m_pLootbox = new Lootbox();
-	addChild(m_pLootbox);
-	m_pLootbox->setPosition(m_pRamp->getPositionTop1().x, m_pRamp->getPositionTop1().y - m_pLootbox->getHeight());
-
+	
+	
 	// Throw Button
 	m_pThrowButton = new Button("../Assets/textures/throwbutton.png", "throwbutton", BACK_BUTTON);
 	m_pThrowButton->getTransform()->position = glm::vec2(700.0f, 50.0f);
@@ -181,35 +197,12 @@ void PlayScene::start()
 	/* Instructions Label */
 	m_pInstructionsLabel = new Label("Press the backtick (`) for Physics Simulation Control", "Consolas");
 	m_pInstructionsLabel->getTransform()->position = glm::vec2(Config::SCREEN_WIDTH * 0.5f, 565.0f);
+	m_pInstructionsLabel->setColour({255,255,255,255});
 	addChild(m_pInstructionsLabel);
 
-	m_pPPM = new Label("", "digi", 20, { 0,0,0,255 });
-	m_pPPM->getTransform()->position = glm::vec2(Config::SCREEN_WIDTH * 0.5, 585.0f);
-	addChild(m_pPPM);
-
-	m_pVelocityLabel = new Label("", "digi", 20,{ 255, 255, 255,255});
-	m_pVelocityLabel->getTransform()->position = glm::vec2(Config::SCREEN_WIDTH * 0.85f, 340.0f);
-	addChild(m_pVelocityLabel);
-
-	m_pAngleLabel = new Label("", "digi", 20, { 255,255,255,255 });
-	m_pAngleLabel->getTransform()->position = glm::vec2(Config::SCREEN_WIDTH * 0.85f, 360.0f);
-	addChild(m_pAngleLabel);
-
-	m_pTotalDistance = new Label("", "digi", 20, { 255,255,255,255 });
-	m_pTotalDistance->getTransform()->position = glm::vec2(Config::SCREEN_WIDTH * 0.85f, 380.0f);
-	addChild(m_pTotalDistance);
-
-	m_pAccelerationLabel = new Label("", "digi", 20, { 255,255,255,255 });
-	m_pAccelerationLabel->getTransform()->position = glm::vec2(Config::SCREEN_WIDTH * 0.85f, 400.0f);
-	addChild(m_pAccelerationLabel);
-
-	m_pForce = new Label("", "digi", 20, { 255,255,255,255 });
-	m_pForce->getTransform()->position = glm::vec2(Config::SCREEN_WIDTH * 0.85f, 420.0f);
-	addChild(m_pForce);
-
-	m_pMass = new Label("", "digi", 20, { 255,255,255,255 });
-	m_pMass->getTransform()->position = glm::vec2(Config::SCREEN_WIDTH * 0.85f, 440.0f);
-	addChild(m_pMass);
+	std::cout << "Play Scene DisplayList Before Bullet Pool count = " << PlayScene::getDisplayList().size() << std::endl;
+	// Bullet Pool
+	m_pBulletPool = new BulletPool(10);
 
 }
 
@@ -288,3 +281,15 @@ void PlayScene::GUI_Function() const
 	ImGuiSDL::Render(ImGui::GetDrawData());
 	ImGui::StyleColorsDark();
 }
+
+//void PlayScene::UseBulletPool()
+//{
+//	Bullet* bullet = m_pBulletPool->Spawn();
+//
+//	if(bullet)
+//	{
+//		addChild(bullet);
+//	}
+//	std::cout << "Play Scene DisplayList count = " << PlayScene::getDisplayList().size() << std::endl;
+//	bulletSpawnTimer = SDL_GetTicks();
+//}

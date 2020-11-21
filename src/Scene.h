@@ -29,7 +29,8 @@ public:
 
 	void updateDisplayList();
 	void drawDisplayList();
-
+	void disableChild(DisplayObject* child);
+	std::vector<DisplayObject*> getDisplayList();
 private:
 	uint32_t m_nextLayerIndex = 0;
 	std::vector<DisplayObject*> m_displayList;
