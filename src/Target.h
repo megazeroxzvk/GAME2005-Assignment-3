@@ -2,9 +2,9 @@
 #ifndef __TARGET__
 #define __TARGET__
 
-#include "DisplayObject.h"
+#include "Sprite.h"
 
-class Target final : public DisplayObject {
+class Target final : public Sprite {
 public:
 	Target();
 	~Target();
@@ -13,12 +13,26 @@ public:
 	virtual void draw() override;
 	virtual void update() override;
 	virtual void clean() override;
-
-private:
+	
 	void m_move();
+
+	// constant check bounds
 	void m_checkBounds();
 	void m_reset();
+
+
+	// friction getters and setters
+	float getFriction();
+	void setFriction(float friction);
+
+	// mass getters and setters
+	float getMass();
+	void setMass(float mass);
+private:
+	float m_friction;
+	float m_mass;
 };
+
 
 
 #endif /* defined (__TARGET__) */

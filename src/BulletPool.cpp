@@ -10,6 +10,7 @@ BulletPool::BulletPool()
 BulletPool::BulletPool(int size)
 {
 	createPool(size);
+	this->size = size;
 }
 
 BulletPool::~BulletPool()

@@ -43,6 +43,8 @@ void PlayScene::update()
 		m_pBulletPool->useBulletPool();
 		bulletSpawnTimer = SDL_GetTicks();
 	}
+
+	// BulletPool
 	m_pBulletPool->collisionCheck(m_pJet);
 	m_pBulletPool->Update();
 	
@@ -195,8 +197,8 @@ void PlayScene::start()
 	addChild(m_pResetButton);
 
 	/* Instructions Label */
-	m_pInstructionsLabel = new Label("Press the backtick (`) for Physics Simulation Control", "Consolas");
-	m_pInstructionsLabel->getTransform()->position = glm::vec2(Config::SCREEN_WIDTH * 0.5f, 565.0f);
+	m_pInstructionsLabel = new Label("Press the backtick (`) for Simulation Control Menu", "Consolas");
+	m_pInstructionsLabel->getTransform()->position = glm::vec2(Config::SCREEN_WIDTH * 0.5f, 25.0f);
 	m_pInstructionsLabel->setColour({255,255,255,255});
 	addChild(m_pInstructionsLabel);
 
@@ -229,8 +231,10 @@ void PlayScene::GUI_Function() const
 
 	//ImGui::Separator();
 
+	//ImGui::DragFloat("Gravity",m_IMGUI_gravity, 0.5f, 5.0f, 25.0f);
+	
 	static float width = { 4.0f};
-	if (ImGui::SliderFloat("Ramp Width (in meters)", &width, 4.0f, 15.0f))
+	if (ImGui::DragFloat("Ramp Width (in meters)", &width, 4.0f, 15.0f))
 	{
 		m_pRamp->setPositionBase2({ m_pRamp->getPositionBase1().x + (width * SCALE),m_pRamp->getPositionBase2().y });
 		m_pLootbox->startSimulation = false;

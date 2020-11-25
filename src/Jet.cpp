@@ -95,19 +95,3 @@ SDL_Rect Jet::getCollisionBox2()
 {
 	return boundingBox2;
 }
-
-//void Jet::boundingBoxUpdate()
-//{
-//	
-//	boundingBox[0].w = getWidth() * 0.25f;
-//	boundingBox[0].h = getWidth() * 0.5f;
-//	boundingBox[0].x = getTransform()->position.x + (getWidth() * 0.5f - boundingBox[0].w * 0.5);
-//	boundingBox[0].y = getTransform()->position.y;
-//	
-//
-//	boundingBox[1].w = getWidth();
-//	boundingBox[1].h = getWidth() * 0.5f;
-//	boundingBox[1].x = getTransform()->position.x;
-//	boundingBox[1].y = getTransform()->position.y + (getHeight() * 0.5);	
-//}
-

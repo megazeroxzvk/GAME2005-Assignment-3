@@ -214,10 +214,11 @@ int CollisionManager::circleAABBsquaredDistance(const glm::vec2 circle_centre, i
 	return (dx * dx) + (dy * dy);
 }
 
-bool CollisionManager::circleAABBCheck(GameObject* object1, GameObject* object2)
+bool CollisionManager::circleAABBCheck(GameObject* object1, GameObject* object2, bool rotate)
 {
 	// circle
-	const auto circleCentre = object1->getTransform()->position;
+	const glm::vec2 circleCentre = { object1->getTransform()->position.x , object1->getTransform()->position.y };
+	//std::cout << "circleCentre  x = " << circleCentre.x << " circleCentre.y = " << circleCentre.y << std::endl;
 	const int circleRadius = std::max(object1->getWidth() * 0.5f, object1->getHeight() * 0.5f);
 	// aabb
 	const auto boxWidth = object2->getWidth();
@@ -225,7 +226,11 @@ bool CollisionManager::circleAABBCheck(GameObject* object1, GameObject* object2)
 	const auto boxHeight = object2->getHeight();
 	int halfBoxHeight = boxHeight * 0.5f;
 
-	const auto boxStart = object2->getTransform()->position - glm::vec2(boxWidth * 0.5f, boxHeight * 0.5f);
+	//std::cout << "Collider Box width and height = " << boxWidth << " ," << boxHeight << std::endl;
+	//std::cout << "Collider Box Positions x = " << object2->getTransform()->position.x << ", y = " << object2->getTransform()->position.y << std::endl;
+	
+	const auto boxStart = object2->getTransform()->position;// +glm::vec2(boxWidth * 0.5f, boxHeight * 0.5f);
+	//std::cout << "BoxStart  x = " << boxStart.x << " BoxStart.y = " << boxStart.y << std::endl;
 
 	if (circleAABBsquaredDistance(circleCentre, circleRadius, boxStart, boxWidth, boxHeight) <= (circleRadius * circleRadius))
 	{
@@ -233,49 +238,146 @@ bool CollisionManager::circleAABBCheck(GameObject* object1, GameObject* object2)
 
 			object2->getRigidBody()->isColliding = true;
 
-			const auto attackVector = object1->getTransform()->position - object2->getTransform()->position;
+			glm::vec2 object2Mid = { object2->getTransform()->position.x + object2->getWidth() * 0.5, object2->getTransform()->position.y + object2->getHeight() * 0.5 };
+			const auto attackVector = object1->getTransform()->position - object2Mid;
+			;
 			const auto normal = glm::vec2(0.0f, -1.0f);
 
+		//	std::cout << "Attack Vector.X = " << attackVector.x << " Attack Vector.Y = " <<  attackVector.y << std::endl;
+			
 			const auto dot = Util::dot(attackVector, normal);
 			const auto angle = acos(dot / Util::magnitude(attackVector)) * Util::Rad2Deg;
-
+			std::cout << "Angle of Incidence = " << angle << " degree." << std::endl;
 			switch (object2->getType()) {
 			case TARGET:
 				std::cout << "Collision with Planet!" << std::endl;
-				SoundManager::Instance().playSound("yay", 0);
+				//SoundManager::Instance().playSound("yay", 0);
 				break;
-			case SHIP:
+			case BRICK:
 				{
-					SoundManager::Instance().playSound("thunder", 0);
+					//SoundManager::Instance().playSound("thunder", 0);
 					auto velocityX = object1->getRigidBody()->velocity.x;
 					auto velocityY = object1->getRigidBody()->velocity.y;
+					if(!rotate)
+					{
+						std::cout << "Attack Vector.X = " << attackVector.x << " Attack Vector.Y = " << attackVector.y << std::endl;
+						if ((attackVector.x > 0 && attackVector.y < 0) || (attackVector.x < 0 && attackVector.y < 0))
+							// top right or top left
+						{
+							//std::cout << "tan INV = " << atan(object2->getWidth() / object2->getHeight()) << std::endl;
+							if (angle <= 78.69f)//atan(object2->getWidth() / object2->getHeight()) * Util::Rad2Deg)
+							{
+								
+								object1->getRigidBody()->velocity = glm::vec2(velocityX, -velocityY);
+							}
+							else
+							{
+								object1->getRigidBody()->velocity = glm::vec2(-velocityX, velocityY);
 
-					if ((attackVector.x > 0 && attackVector.y < 0) || (attackVector.x < 0 && attackVector.y < 0))
-						// top right or top left
+							}
+						}
+
+						if ((attackVector.x > 0 && attackVector.y > 0) || (attackVector.x < 0 && attackVector.y > 0))
+							// bottom right or bottom left
+						{
+							std::cout << "tan INV = " << atan(object2->getHeight() / object2->getWidth()) * Util::Rad2Deg << std::endl;
+							if (angle <= 101.3099f)//((atan(object2->getHeight() / object2->getWidth()) * Util::Rad2Deg)) + 90)
+							{
+								object1->getRigidBody()->velocity = glm::vec2(-velocityX, velocityY);
+							}
+							else
+							{
+								object1->getRigidBody()->velocity = glm::vec2(velocityX, -velocityY);
+							}
+						}
+					}
+					else
 					{
 						
-						if (angle <= 45)
+						std::cout << "Attack Vector.X = " << attackVector.x << " Attack Vector.Y = " << attackVector.y << std::endl;
+						std::cout << "angle = " << angle << std::endl;
+						if ((attackVector.x > 0 && attackVector.y < 0) || (attackVector.x < 0 && attackVector.y < 0))
+							// top right or top left
 						{
-							object1->getRigidBody()->velocity = glm::vec2(velocityX, -velocityY);
+							std::cout << "height = " << object2->getHeight() << std::endl;
+							std::cout << "width = " << object2->getWidth() << std::endl;
+							std::cout << "tan INV = " << atan(object2->getWidth()/object2->getHeight()) << std::endl;
+							if (angle <= 11.3099f)//atan(object2->getWidth()/ object2->getHeight()) * Util::Rad2Deg)
+							{
+								object1->getRigidBody()->velocity = glm::vec2(velocityX, -velocityY);
+							}
+							else
+							{
+								object1->getRigidBody()->velocity = glm::vec2(-velocityX, velocityY);
+							}
 						}
-						else
-						{
-							object1->getRigidBody()->velocity = glm::vec2(-velocityX, velocityY);
-						}
-					}
 
-					if ((attackVector.x > 0 && attackVector.y > 0) || (attackVector.x < 0 && attackVector.y > 0))
-						// bottom right or bottom left
-					{
-						if (angle <= 135)
+						if ((attackVector.x > 0 && attackVector.y > 0) || (attackVector.x < 0 && attackVector.y > 0))
+							// bottom right or bottom left
 						{
-							object1->getRigidBody()->velocity = glm::vec2(-velocityX, velocityY);
-													}
-						else
-						{
-							object1->getRigidBody()->velocity = glm::vec2(velocityX, -velocityY);
-													}
+							if (angle <= 168.69f)//((atan(object2->getHeight()/object2->getWidth()) * Util::Rad2Deg)) + 90)
+							{
+								object1->getRigidBody()->velocity = glm::vec2(-velocityX, velocityY);
+							}
+							else
+							{
+								object1->getRigidBody()->velocity = glm::vec2(velocityX, -velocityY);
+							}
+						}
 					}
+					
+
+					//if ((attackVector.x > 0 && attackVector.y < 0))
+						// top right 
+				//		
+				//		if (angle <= 45)
+				//		{
+				//			std::cout << "angle = " << angle << std::endl;
+				//			object1->getRigidBody()->velocity = glm::vec2(velocityX, -velocityY);
+				//		}
+				//		else
+				//		{
+				//			//std::cout << "angle = " << angle << std::endl;
+				//			object1->getRigidBody()->velocity = glm::vec2(velocityX, -velocityY);
+				//		}
+				//	}
+				//	
+				//	if((attackVector.x < 0 && attackVector.y < 0))
+				//	{	//or top left
+				//		if (angle <= 45)
+				//		{
+				//			
+				//			object1->getRigidBody()->velocity = glm::vec2(velocityX, -velocityY);
+				//		}
+				//		else
+				//		{
+				//			object1->getRigidBody()->velocity = glm::vec2(-velocityX, velocityY);
+				//		}
+				//	}
+				//	if ((attackVector.x > 0 && attackVector.y > 0))
+				//		// bottom right or bottom left
+				//	{
+				//		if (angle <= 135)
+				//		{
+				//			object1->getRigidBody()->velocity = glm::vec2(velocityX, -velocityY);
+				//									}
+				//		else
+				//		{
+				//			object1->getRigidBody()->velocity = glm::vec2(-velocityX, velocityY);
+				//									}
+				//	}
+				//	if(attackVector.x < 0 && attackVector.y > 0)
+				//	{
+				//		
+				//		if (angle <= 135)
+				//		{
+				//			object1->getRigidBody()->velocity = glm::vec2(-velocityX, velocityY);
+				//		}
+				//		else
+				//		{
+				//			object1->getRigidBody()->velocity = glm::vec2(velocityX, -velocityY);
+				//		}
+				//	}
 				}
 				
 

@@ -31,6 +31,7 @@ void PlayScene2::draw()
 void PlayScene2::update()
 {
 	updateDisplayList();
+	m_pBrick->CollisionCheckWithBoundingBoxes(m_pTarget);
 	/*m_pVelocityLabel->setText("Velocity = " + std::to_string(fabs(m_pLootbox->getRigidBody()->velocity.x) / SCALE) + " m/s");
 	m_pAngleLabel->setText("Angle = " + std::to_string(m_pLootbox->getAngle()) + " deg");
 	m_pTotalDistance->setText("Total Distance = " + std::to_string(m_pLootbox->getDistance()) + " m");
@@ -49,6 +50,21 @@ void PlayScene2::handleEvents()
 {
 	EventManager::Instance().update();
 
+	if (EventManager::Instance().isIMGUIActive())
+	{
+		SDL_SetRelativeMouseMode(SDL_FALSE);
+	}
+	else	//don't show mouse cursor and take mouse Input
+	{
+		//SDL_SetRelativeMouseMode(SDL_TRUE);
+		m_pBrick->BrickMovementHandle(EventManager::Instance().getMousePosition());
+	}
+
+	if (EventManager::Instance().isKeyDown(SDL_SCANCODE_R))
+	{
+		m_pBrick->toggleRotate();
+	}
+	
 	// handle player movement with GameController
 	/*if (SDL_NumJoysticks() > 0)
 	{
@@ -117,8 +133,14 @@ void PlayScene2::handleEvents()
 void PlayScene2::start()
 {
 	//Set Background Tatooine
-	m_pBackground = new Background("../Assets/textures/owbkg.jpg","background_playscene");
+	m_pBackground = new Background("../Assets/textures/bkg2.png","background_playscene2");
 	addChild(m_pBackground);
+
+	m_pTarget = new Target();
+	addChild(m_pTarget);
+
+	m_pBrick = new Brick();
+	addChild(m_pBrick);
 	
 	// Set GUI Title
 	m_guiTitle = "Play Scene";

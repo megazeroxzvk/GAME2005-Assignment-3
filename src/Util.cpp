@@ -282,6 +282,12 @@ float Util::signedAngle(const glm::vec2 from, const glm::vec2 to)
 	return unsigned_angle * sign;
 }
 
+float Util::calculateAngle(glm::vec2 pos1, glm::vec2 pos2)
+{
+	glm::vec2 dis; // = squaredDistance(pos1, pos2);
+	return atan2(dis.y, dis.x);
+}
+
 void Util::DrawLine(glm::vec2 start, glm::vec2 end, glm::vec4 colour)
 {
 	int r = floor(colour.r * 255.0f);

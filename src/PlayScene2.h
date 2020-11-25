@@ -12,12 +12,16 @@
 #include "Label.h"
 #include "Ramp.h"
 #include "Lootbox.h"
+#include "Target.h"
 #include "ThermalDetonator.h"
 #include "StormTroopers.h"
+#include "Brick.h"
 
 //static int slider_position;
 //static float slider_speed;
 //static float slider_angle;
+
+
 
 
 class PlayScene2 : public Scene
@@ -52,15 +56,9 @@ private:
 	Button* m_pResetButton;
 	Label* m_pInstructionsLabel;
 
-	//Status Labels
-	Label* m_pVelocityLabel;
-	Label* m_pAngleLabel;
-	Label* m_pTotalDistance;
-	Label* m_pAccelerationLabel;
-	Label* m_pMass;
-	Label* m_pForce;
-	Label* m_pPPM;
-
+	//Brick and Target
+	Target* m_pTarget;
+	Brick* m_pBrick;
 
 	mutable bool reset = false;
 

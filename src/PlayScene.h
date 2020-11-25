@@ -62,7 +62,8 @@ private:
 	Button* m_pResetButton;
 	Label* m_pInstructionsLabel;
 
-	//Status Labels
+	//IMGUI adjusters
+	float* m_IMGUI_gravity;
 
 
 	mutable bool reset = false;

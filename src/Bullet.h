@@ -21,15 +21,19 @@ public:
 	void m_reset();
 
 	// gravity adjustment
-	void m_adjustGravity(float value);
+	void m_setGravity(float value);
+	float m_getGravity();
 
 	bool active = false;
 
+	// bullet number
 	int getBulletNumber();
 	void setBulletNumber(int number);
+
 	
 private:
 	int bulletNumber;
+	float m_gravity = 9.8;
 };
 
 #endif /* defined (__BULLET__) */
