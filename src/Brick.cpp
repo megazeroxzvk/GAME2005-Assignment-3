@@ -20,6 +20,7 @@ Brick::Brick()
 	getRigidBody()->velocity = glm::vec2(0.0f, 0.0f);
 	getRigidBody()->acceleration = glm::vec2(0.0f, 0.0f);
 	getRigidBody()->isColliding = false;
+	m_mass = 10.0f;
 	setType(BRICK);
 	
 	horizontalColliderBox = new BoundingBox(this, false);
@@ -67,7 +68,8 @@ void Brick::draw()
 void Brick::update()
 {
 	// Movement Update
-
+	verticalColliderBox->update();
+	horizontalColliderBox->update();
 	verticalColliderBox->getTransform()->position = { this->getTransform()->position.x + this->getWidth() * 0.5 - this->getHeight() * 0.5,
 		this->getTransform()->position.y - this->getWidth() * 0.5 + this->getHeight() * 0.5 };
 	horizontalColliderBox->getTransform()->position = getTransform()->position;
@@ -86,6 +88,7 @@ void Brick::BrickMovementHandle(glm::vec2 mousePos)
 	std::cout << "Mouse Position X = " << mousePos.x
 		<< "Mouse Position Y = " << mousePos.y << std::endl;*/
 
+	
 	
 	glm::vec2 distance = {mousePos.x - (getTransform()->position.x + getWidth()*0.5),
 		mousePos.y - (getTransform()->position.y+getHeight()*0.5)};
@@ -113,7 +116,10 @@ void Brick::BrickMovementHandle(glm::vec2 mousePos)
 	
 	//std::cout << "Speed Factor = " << speedFactor << std::endl;
 	// Stuttering Issue when using direction vector.
-	getTransform()->position += (speedFactor * direction);
+	getRigidBody()->velocity = { speedFactor * direction.x,speedFactor * direction.y};
+	std::cout << "Brick VelX = " << getRigidBody()->velocity.x << "Brick VelY = " << getRigidBody()->velocity.y << std::endl;
+	getTransform()->position += getRigidBody()->velocity;
+
 	
 	
 	checkBounds();
@@ -137,6 +143,16 @@ void Brick::CollisionCheckWithBoundingBoxes(Target*  target)
 void Brick::toggleRotate()
 {
 	rotate = !rotate;
+}
+
+void Brick::setMass(float mass)
+{
+	m_mass = mass;
+}
+
+float Brick::getMass()
+{
+	return m_mass;
 }
 
 void Brick::checkBounds()
@@ -192,21 +208,22 @@ void Brick::checkBounds()
 BoundingBox::BoundingBox(Brick* brickRef, bool rotate)
 {
 	setType(BRICK);
+	brickReference = brickRef;
 	if(!rotate)
 	{
-		getTransform()->position = brickRef->getTransform()->position;
-		setWidth(brickRef->getWidth());
-		setHeight(brickRef->getHeight());
+		getTransform()->position = brickReference->getTransform()->position;
+		setWidth(brickReference->getWidth());
+		setHeight(brickReference->getHeight());
 	}
 	else
 	{
 		getTransform()->position =
 		{
-			brickRef->getTransform()->position.x + brickRef->getWidth() * 0.5 - brickRef->getHeight() * 0.5,
-			brickRef->getTransform()->position.y - brickRef->getWidth() * 0.5 + brickRef->getHeight() * 0.5
+			brickReference->getTransform()->position.x + brickReference->getWidth() * 0.5 - brickReference->getHeight() * 0.5,
+			brickReference->getTransform()->position.y - brickReference->getWidth() * 0.5 + brickReference->getHeight() * 0.5
 		};
-		setWidth(brickRef->getHeight());
-		setHeight(brickRef->getWidth());
+		setWidth(brickReference->getHeight());
+		setHeight(brickReference->getWidth());
 	}
 	
 	
@@ -214,6 +231,8 @@ BoundingBox::BoundingBox(Brick* brickRef, bool rotate)
 	getRigidBody()->acceleration = glm::vec2(0.0f, 0.0f);
 	getRigidBody()->isColliding = false;
 	setType(BRICK);
+	m_mass = brickReference->getMass();
+	
 }
 
 BoundingBox::~BoundingBox()
@@ -229,10 +248,20 @@ void BoundingBox::draw()
 
 void BoundingBox::update()
 {
-	
+	getRigidBody()->velocity = brickReference->getRigidBody()->velocity;
 }
 
 void BoundingBox::clean()
 {
+}
+
+void BoundingBox::setMass(float mass)
+{
+	m_mass = mass;
+}
+
+float BoundingBox::getMass()
+{
+	return m_mass;
 }
 

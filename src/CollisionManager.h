@@ -10,6 +10,8 @@
 #include <GLM/gtx/norm.hpp>
 #include "SoundManager.h"
 
+static glm::vec2 momentumVel;
+
 class CollisionManager
 {
 public:
@@ -27,10 +29,15 @@ public:
 	static bool circleAABBCheck(GameObject* object1, GameObject* object2,bool rotate);
 
 	static bool pointRectCheck(glm::vec2 point, glm::vec2 rect_start, float rect_width, float rect_height);
+
+	static void momentumCalculation(GameObject* object1, GameObject* object2);
+
+	static bool BrickTargetCollision(GameObject* object1, GameObject* object2, bool rotate);
 	
 private:
 	CollisionManager();
 	~CollisionManager();
+	
 };
 
 #endif /* defined (__COLLISION_MANAGER__) */

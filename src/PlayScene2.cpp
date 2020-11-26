@@ -19,7 +19,6 @@ PlayScene2::~PlayScene2()
 
 void PlayScene2::draw()
 {
-
 	drawDisplayList();
 	SDL_SetRenderDrawColor(Renderer::Instance()->getRenderer(), 255, 255, 255, 255);
 	if (EventManager::Instance().isIMGUIActive())
@@ -63,6 +62,15 @@ void PlayScene2::handleEvents()
 	if (EventManager::Instance().isKeyDown(SDL_SCANCODE_R))
 	{
 		m_pBrick->toggleRotate();
+	}
+
+	if(EventManager::Instance().isKeyDown(SDL_SCANCODE_K))
+	{
+		m_pTarget->setCollisionShape(CIRCLE);
+	}
+	if (EventManager::Instance().isKeyDown(SDL_SCANCODE_L))
+	{
+		m_pTarget->setCollisionShape(RECTANGLE);
 	}
 	
 	// handle player movement with GameController

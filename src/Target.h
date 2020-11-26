@@ -2,6 +2,7 @@
 #ifndef __TARGET__
 #define __TARGET__
 
+#include "CollisionShape.h"
 #include "Sprite.h"
 
 class Target final : public Sprite {
@@ -20,6 +21,9 @@ public:
 	void m_checkBounds();
 	void m_reset();
 
+	// Shape change Collision Type set... // complete circle first, then shift to box
+	CollisionShape getCollisionShape();
+	void setCollisionShape(CollisionShape CircleOrSquare);
 
 	// friction getters and setters
 	float getFriction();
@@ -31,6 +35,7 @@ public:
 private:
 	float m_friction;
 	float m_mass;
+	CollisionShape m_shape;
 };
 
 
