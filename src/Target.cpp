@@ -1,4 +1,6 @@
 #include "Target.h"
+
+#include "SoundManager.h"
 #include "TextureManager.h"
 #include "Util.h"
 
@@ -7,6 +9,9 @@ Target::Target()
 {
 	TextureManager::Instance()->load("../Assets/sprites/targetCircle.png","targetCircle");
 	TextureManager::Instance()->load("../Assets/sprites/targetSquare.png","targetSquare");
+
+	SoundManager::Instance().load("../Assets/audio/ballwall.wav", "ballwall", SOUND_SFX);
+	SoundManager::Instance().load("../Assets/audio/goal.wav", "goal", SOUND_SFX);
 
 	// Set to circle as default
 	const auto size = TextureManager::Instance()->getTextureSize("targetCircle");
@@ -36,19 +41,28 @@ void Target::draw()
 	{
 	case CIRCLE:
 		TextureManager::Instance()->draw("targetCircle", x, y, 0, 255, true);
-		Util::DrawCircle(getTransform()->position, std::max(getWidth() * 0.5f, getHeight() * 0.5f), { 1,0,0,1 });
+		if(debugView)
+		{
+			Util::DrawCircle(getTransform()->position, std::max(getWidth() * 0.5f, getHeight() * 0.5f), { 1,0,0,1 });
+		}
 		break;
 
 	case RECTANGLE:
 		TextureManager::Instance()->draw("targetSquare", x, y, 0, 255, true);
-		Util::DrawRect({getTransform()->position.x - getWidth() * 0.5f, getTransform()->position.y - getHeight() * 0.5f}, 
-			getWidth(), getHeight(), { 1,0,0,1 });
+		if(debugView)
+		{
+			Util::DrawRect({ getTransform()->position.x - getWidth() * 0.5f, getTransform()->position.y - getHeight() * 0.5f },
+				getWidth(), getHeight(), { 1,0,0,1 });
+		}
 		break;
 
 	default:
 		TextureManager::Instance()->draw("targetCircle", x, y, 0, 255, true);
-		Util::DrawCircle(getTransform()->position, std::max(getWidth() * 0.5f, getHeight() * 0.5f), 
-			{ 1,0,0,1 });
+		if(debugView)
+		{
+			Util::DrawCircle(getTransform()->position, std::max(getWidth() * 0.5f, getHeight() * 0.5f),
+				{ 1,0,0,1 });
+		}
 		break;
 	}
 	
@@ -84,6 +98,11 @@ void Target::clean()
 void Target::m_move()
 {
 	getTransform()->position += getRigidBody()->velocity;
+	//std::cout << Util::magnitude(getRigidBody()->velocity) << std::endl;
+	if(Util::magnitude(getRigidBody()->velocity) < 0.5f)
+	{
+		getRigidBody()->velocity = { 0,0 };
+	}
 }
 
 // keep the puck in the window
@@ -95,6 +114,7 @@ void Target::m_checkBounds()
 		getTransform()->position.y = 600.0f - (getHeight() * 0.5f);
 		getRigidBody()->velocity = { getRigidBody()->velocity.x,-getRigidBody()->velocity.y };
 		getRigidBody()->velocity *= m_friction;
+		SoundManager::Instance().playSound("ballwall", 0, 1);
 	}
 
 	// top
@@ -103,6 +123,7 @@ void Target::m_checkBounds()
 		getTransform()->position.y = getHeight() * 0.5f;
 		getRigidBody()->velocity = { getRigidBody()->velocity.x,-getRigidBody()->velocity.y };
 		getRigidBody()->velocity *= m_friction;
+		SoundManager::Instance().playSound("ballwall", 0, 1);
 	}
 
 	// right
@@ -111,6 +132,15 @@ void Target::m_checkBounds()
 		getTransform()->position.x = 800.0f - (getWidth() * 0.5f);
 		getRigidBody()->velocity = { -getRigidBody()->velocity.x,getRigidBody()->velocity.y };
 		getRigidBody()->velocity *= m_friction;
+		if (getTransform()->position.y >= 240 && getTransform()->position.y <= (380))
+		{
+			pointsScored <= 0 ? 0 : pointsScored--;
+			SoundManager::Instance().playSound("goal", 0, 1);
+		}
+		else
+		{
+			SoundManager::Instance().playSound("ballwall", 0, 1);
+		}
 	}
 	
 	//left
@@ -119,8 +149,21 @@ void Target::m_checkBounds()
 		getTransform()->position.x = (getWidth() * 0.5f);
 		getRigidBody()->velocity = { -getRigidBody()->velocity.x,getRigidBody()->velocity.y };
 		getRigidBody()->velocity *= m_friction;
-	}
 
+		if(getTransform()->position.y >= 240 && getTransform()->position.y <= (380))
+		{
+			pointsScored++;
+			SoundManager::Instance().playSound("goal", 0, 1);
+		}
+		else
+		{
+			SoundManager::Instance().playSound("ballwall", 0, 1);
+		}
+	}
+	
+	
+	//std::cout << "Points Scored = " << pointsScored << std::endl;
+	
 	//std::cout << "Velocity X = " << getRigidBody()->velocity.x << "\nVelocity Y = " << getRigidBody()->velocity.y << std::endl;
 }
 

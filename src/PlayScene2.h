@@ -47,19 +47,20 @@ private:
 	
 	glm::vec2 m_mousePosition;
 
-	// Sprites
-	Ramp* m_pRamp;
-	Lootbox* m_pLootbox;
-
 	// UI Items
-	Button* m_pThrowButton;
-	Button* m_pResetButton;
 	Label* m_pInstructionsLabel;
 
 	//Brick and Target
 	Target* m_pTarget;
 	Brick* m_pBrick;
 
+	// Status Labels
+	Label* m_pMass;
+	Label* m_pFriction;
+	Label* m_pPointsScored;
+	Label* m_pBallVelocity;
+	Label* m_pPaddleVelocity;
+	
 	mutable bool reset = false;
 
 	

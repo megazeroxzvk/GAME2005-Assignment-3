@@ -31,13 +31,12 @@ void PlayScene2::update()
 {
 	updateDisplayList();
 	m_pBrick->CollisionCheckWithBoundingBoxes(m_pTarget);
-	/*m_pVelocityLabel->setText("Velocity = " + std::to_string(fabs(m_pLootbox->getRigidBody()->velocity.x) / SCALE) + " m/s");
-	m_pAngleLabel->setText("Angle = " + std::to_string(m_pLootbox->getAngle()) + " deg");
-	m_pTotalDistance->setText("Total Distance = " + std::to_string(m_pLootbox->getDistance()) + " m");
-	m_pAccelerationLabel->setText("Acceleration = " + std::to_string(fabs(m_pLootbox->getRigidBody()->acceleration.y) / SCALE) + " m/s^2");
-	m_pForce->setText("Force = " + std::to_string((m_pLootbox->getForce().x / SCALE)) + " N");
-	m_pMass->setText("Mass = " + std::to_string(fabs(m_pLootbox->getMass())) + " Kg");
-	m_pPPM->setText("Scale Value: 30 Pixels = 1 Meter");*/
+
+	m_pMass->setText("Mass of Puck = " + std::to_string((m_pTarget->getMass())) + " grams");
+	m_pFriction->setText("Energy Conserved = " + std::to_string((m_pTarget->getFriction())) + " %");
+	m_pPointsScored->setText("Score = " + std::to_string((m_pTarget->pointsScored)) + " points");
+	m_pBallVelocity->setText("Ball Velocity = " + std::to_string(Util::magnitude(m_pTarget->getRigidBody()->velocity)) + " m/s");
+	m_pPaddleVelocity->setText("Paddle Velocity = " + std::to_string(Util::magnitude(m_pBrick->getRigidBody()->velocity)) + " m/s");
 }
 
 void PlayScene2::clean()
@@ -57,20 +56,6 @@ void PlayScene2::handleEvents()
 	{
 		SDL_SetRelativeMouseMode(SDL_TRUE);
 		m_pBrick->BrickMovementHandle(EventManager::Instance().getMousePosition());
-	}
-
-	if (EventManager::Instance().isKeyDown(SDL_SCANCODE_R))
-	{
-		m_pBrick->toggleRotate();
-	}
-
-	if(EventManager::Instance().isKeyDown(SDL_SCANCODE_K))
-	{
-		m_pTarget->setCollisionShape(CIRCLE);
-	}
-	if (EventManager::Instance().isKeyDown(SDL_SCANCODE_L))
-	{
-		m_pTarget->setCollisionShape(RECTANGLE);
 	}
 	
 	// handle player movement with GameController
@@ -153,93 +138,33 @@ void PlayScene2::start()
 	// Set GUI Title
 	m_guiTitle = "Play Scene";
 
-	////Ramp
-	//m_pRamp = new Ramp();
-	//addChild(m_pRamp);
+	SoundManager::Instance().setSoundVolume(80);
+	SoundManager::Instance().load("../Assets/audio/paddlehit.wav", "paddlehit", SOUND_SFX);
 
-	////Lootbox
-	//m_pLootbox = new Lootbox();
-	//addChild(m_pLootbox);
-	//m_pLootbox->setPosition(m_pRamp->getPositionTop1().x, m_pRamp->getPositionTop1().y - m_pLootbox->getHeight());
+	/* Instructions Label */
+	m_pInstructionsLabel = new Label("Press the backtick (`) for Physics Simulation Control", "Consolas");
+	m_pInstructionsLabel->getTransform()->position = glm::vec2(Config::SCREEN_WIDTH * 0.5f, 565.0f);
+	addChild(m_pInstructionsLabel);
 
-	//// Throw Button
-	//m_pThrowButton = new Button("../Assets/textures/throwbutton.png", "throwbutton", BACK_BUTTON);
-	//m_pThrowButton->getTransform()->position = glm::vec2(700.0f, 50.0f);
-	//m_pThrowButton->addEventListener(CLICK, [&]()-> void
-	//{
-	//	m_pThrowButton->setActive(false);
-	//	if(!m_pLootbox->getReachedLocation())
-	//	{
-	//		m_pRamp->setNecessaryValues();
-	//		m_pLootbox->setNecessaryValues(m_pRamp->m_getAngle(), m_pRamp->m_getHypotenuse());
-	//		m_pLootbox->startSimulation = true;
-	//	}	
-	//});
-	//
-	//m_pThrowButton->addEventListener(MOUSE_OVER, [&]()->void
-	//{
-	//	m_pThrowButton->setAlpha(128);
-	//});
+	m_pMass = new Label("", "digi", 20, { 0, 0, 0,255 }, { 0,0 }, TTF_STYLE_NORMAL, false);
+	m_pMass->getTransform()->position = glm::vec2(Config::SCREEN_WIDTH * 0.65f, 25.0f);
+	addChild(m_pMass);
 
-	//m_pThrowButton->addEventListener(MOUSE_OUT, [&]()->void
-	//{
-	//	m_pThrowButton->setAlpha(255);
-	//});
-	//addChild(m_pThrowButton);
+	m_pFriction = new Label("", "digi", 20, { 0, 0, 0,255 }, { 0,0 }, TTF_STYLE_NORMAL, false);
+	m_pFriction->getTransform()->position = glm::vec2(Config::SCREEN_WIDTH * 0.65f, 50.0f);
+	addChild(m_pFriction);
 
-	//// Reset Button
-	//m_pResetButton = new Button("../Assets/textures/resetbutton.png", "resetbutton", NEXT_BUTTON);
-	//m_pResetButton->getTransform()->position = glm::vec2(700.0f, 110.0f);
-	//m_pResetButton->addEventListener(CLICK, [&]()-> void
-	//{
-	//	m_pResetButton->setActive(false);
-	//	m_pLootbox->startSimulation = false;
-	//	m_pRamp->reset();
-	//	m_pLootbox->reset(m_pRamp->getPositionTop1().x, m_pRamp->getPositionTop1().y - m_pLootbox->getHeight());
-	//	reset = true;	
-	//});
-	//m_pResetButton->addEventListener(MOUSE_OVER, [&]()->void
-	//{
-	//	m_pResetButton->setAlpha(128);
-	//});
-	//m_pResetButton->addEventListener(MOUSE_OUT, [&]()->void
-	//{
-	//	m_pResetButton->setAlpha(255);
-	//});
-	//addChild(m_pResetButton);
+	m_pBallVelocity = new Label("", "digi", 20, { 0, 0, 0,255 }, { 0,0 }, TTF_STYLE_NORMAL, false);
+	m_pBallVelocity->getTransform()->position = glm::vec2(Config::SCREEN_WIDTH * 0.65f, 75.0f);
+	addChild(m_pBallVelocity);
 
-	///* Instructions Label */
-	//m_pInstructionsLabel = new Label("Press the backtick (`) for Physics Simulation Control", "Consolas");
-	//m_pInstructionsLabel->getTransform()->position = glm::vec2(Config::SCREEN_WIDTH * 0.5f, 565.0f);
-	//addChild(m_pInstructionsLabel);
+	m_pPaddleVelocity = new Label("", "digi", 20, { 0, 0, 0,255 }, { 0,0 }, TTF_STYLE_NORMAL, false);
+	m_pPaddleVelocity->getTransform()->position = glm::vec2(Config::SCREEN_WIDTH * 0.65f, 100.0f);
+	addChild(m_pPaddleVelocity);
 
-	//m_pPPM = new Label("", "digi", 20, { 0,0,0,255 });
-	//m_pPPM->getTransform()->position = glm::vec2(Config::SCREEN_WIDTH * 0.5, 585.0f);
-	//addChild(m_pPPM);
-
-	//m_pVelocityLabel = new Label("", "digi", 20,{ 255, 255, 255,255});
-	//m_pVelocityLabel->getTransform()->position = glm::vec2(Config::SCREEN_WIDTH * 0.85f, 340.0f);
-	//addChild(m_pVelocityLabel);
-
-	//m_pAngleLabel = new Label("", "digi", 20, { 255,255,255,255 });
-	//m_pAngleLabel->getTransform()->position = glm::vec2(Config::SCREEN_WIDTH * 0.85f, 360.0f);
-	//addChild(m_pAngleLabel);
-
-	//m_pTotalDistance = new Label("", "digi", 20, { 255,255,255,255 });
-	//m_pTotalDistance->getTransform()->position = glm::vec2(Config::SCREEN_WIDTH * 0.85f, 380.0f);
-	//addChild(m_pTotalDistance);
-
-	//m_pAccelerationLabel = new Label("", "digi", 20, { 255,255,255,255 });
-	//m_pAccelerationLabel->getTransform()->position = glm::vec2(Config::SCREEN_WIDTH * 0.85f, 400.0f);
-	//addChild(m_pAccelerationLabel);
-
-	//m_pForce = new Label("", "digi", 20, { 255,255,255,255 });
-	//m_pForce->getTransform()->position = glm::vec2(Config::SCREEN_WIDTH * 0.85f, 420.0f);
-	//addChild(m_pForce);
-
-	//m_pMass = new Label("", "digi", 20, { 255,255,255,255 });
-	//m_pMass->getTransform()->position = glm::vec2(Config::SCREEN_WIDTH * 0.85f, 440.0f);
-	//addChild(m_pMass);
+	m_pPointsScored = new Label("", "digi", 30, { 0, 0, 0,255 },{0,0}, TTF_STYLE_BOLD,false);
+	m_pPointsScored->getTransform()->position = glm::vec2(Config::SCREEN_WIDTH * 0.07f, 25.0f);
+	addChild(m_pPointsScored);
 
 }
 
@@ -266,48 +191,63 @@ void PlayScene2::GUI_Function() const
 
 	//ImGui::Separator();
 
-	static float width = { 4.0f};
-	if (ImGui::SliderFloat("Ramp Width (in meters)", &width, 4.0f, 15.0f))
+	static float mass = { 5.0f};
+	if (ImGui::SliderFloat("Mass Of Puck (gms)", &mass, 0.5f, 10.0f,"%.1f"))
 	{
-		m_pRamp->setPositionBase2({ m_pRamp->getPositionBase1().x + (width * SCALE),m_pRamp->getPositionBase2().y });
-		m_pLootbox->startSimulation = false;
-		//m_pLootbox->reset(m_pRamp->getPositionTop1().x, m_pRamp->getPositionTop1().y - m_pLootbox->getHeight());
-		m_pLootbox->resetPosition(m_pRamp->getPositionTop1().x, m_pRamp->getPositionTop1().y - m_pLootbox->getHeight());
+		m_pTarget->setMass(mass);
 	}
 
-	static float height = { 3.0f };
-	if (ImGui::SliderFloat("Ramp Height (in meters)", &height, 3.0f, 15.0f))
+	static float friction = {0.8f };
+	if (ImGui::SliderFloat("Wall Hit Energy Conserved (%)", &friction, 0.1f, 0.9f,"%.2f"))
 	{
-		m_pRamp->setPositionTop1({ m_pRamp->getPositionTop1().x, m_pRamp->getPositionBase1().y - (height * SCALE) });
-		m_pLootbox->startSimulation = false;
-		//m_pLootbox->reset(m_pRamp->getPositionTop1().x, m_pRamp->getPositionTop1().y - m_pLootbox->getHeight());
-		m_pLootbox->resetPosition(m_pRamp->getPositionTop1().x, m_pRamp->getPositionTop1().y - m_pLootbox->getHeight());
+		m_pTarget->setFriction(friction);
 	}
 
-	static float mass = { 12.8f };
-	if (ImGui::SliderFloat("Mass (in Kilograms)", &mass, 10.0f, 20.0f))
+	static bool flipPaddle;
+	ImGui::Checkbox("Flip/Rotate Paddle", &flipPaddle);
+	m_pBrick->rotate = flipPaddle;
+	
+	if (ImGui::Button("Circle Puck"))
 	{
-		m_pLootbox->startSimulation = false;
-		//m_pLootbox->reset(m_pRamp->getPositionTop1().x, m_pRamp->getPositionTop1().y - m_pLootbox->getHeight());
-		m_pLootbox->resetPosition(m_pRamp->getPositionTop1().x, m_pRamp->getPositionTop1().y - m_pLootbox->getHeight());
-		m_pLootbox->setMass(mass);
+		m_pTarget->setCollisionShape(CIRCLE);
 	}
 
-	static float coefficient = { 0.42 };
-	if (ImGui::SliderFloat("Coefficient of Friction", &coefficient, 0.05f, 4.0f))
+	if (ImGui::Button("Square Puck"))
 	{
-		m_pLootbox->startSimulation = false;
-		//m_pLootbox->reset(m_pRamp->getPositionTop1().x, m_pRamp->getPositionTop1().y - m_pLootbox->getHeight());
-		m_pLootbox->resetPosition(m_pRamp->getPositionTop1().x, m_pRamp->getPositionTop1().y - m_pLootbox->getHeight());
-		m_pLootbox->setCoefficientOfFriction(coefficient);
+		m_pTarget->setCollisionShape(RECTANGLE);
 	}
 
+	ImGui::Separator();
+	
+	static bool debugView;
+	ImGui::Checkbox("View Collision Boxes", &debugView);
+	m_pTarget->debugView = debugView;
+	m_pBrick->debugView = debugView;
+
+	ImGui::Separator();
+	
+	if (ImGui::Button("Reset"))
+	{
+		reset = true;
+	}
+
+	if (ImGui::Button("Back"))
+	{
+		TheGame::Instance()->changeSceneState(START_SCENE);
+	}
+
+
+	
 	if(reset)
 	{
-		width = 4.0f;
-		height = 3.0f;
-		mass = 12.8f;
-		coefficient = 0.42f;
+		mass = 5.0f;
+		m_pTarget->setMass(mass);
+		friction = 0.8f;
+		m_pTarget->setFriction(friction);
+		debugView = false;
+		flipPaddle = false;
+		m_pBrick->rotate = flipPaddle;
+		m_pTarget->setCollisionShape(CIRCLE);
 		reset = false;
 	}
 	ImGui::End();

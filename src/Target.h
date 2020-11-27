@@ -32,6 +32,10 @@ public:
 	// mass getters and setters
 	float getMass();
 	void setMass(float mass);
+
+	bool debugView;
+
+	int pointsScored;
 private:
 	float m_friction;
 	float m_mass;

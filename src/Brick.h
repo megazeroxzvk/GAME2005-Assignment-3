@@ -25,11 +25,13 @@ public:
 	// getters and setters for mass
 	void setMass(float mass);
 	float getMass();
+	bool debugView;
+	bool rotate = false;
 	
 private:
 	BoundingBox* horizontalColliderBox;
 	BoundingBox* verticalColliderBox;
-	bool rotate = false;
+	
 	
 protected:
 	float m_velocityX, m_velocityY;

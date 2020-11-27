@@ -224,6 +224,7 @@ bool CollisionManager::circleAABBCheck(GameObject* object1, GameObject* object2,
 			if (circleAABBsquaredDistance(circleCentre, circleRadius, boxStart, boxWidth, boxHeight) <= (circleRadius * circleRadius))
 			{
 				BrickTargetCollision(object1, object2, rotate);
+				SoundManager::Instance().playSound("paddlehit", 0, 1);
 			}
 			else
 			{
@@ -236,6 +237,7 @@ bool CollisionManager::circleAABBCheck(GameObject* object1, GameObject* object2,
 			if (AABBCheck(object1,object2))
 			{
 				BrickTargetCollision(object1, object2, rotate);
+				SoundManager::Instance().playSound("paddlehit", 0, 1);
 			}
 			else
 			{
@@ -248,6 +250,7 @@ bool CollisionManager::circleAABBCheck(GameObject* object1, GameObject* object2,
 			if (circleAABBsquaredDistance(circleCentre, circleRadius, boxStart, boxWidth, boxHeight) <= (circleRadius * circleRadius))
 			{
 				BrickTargetCollision(object1, object2, rotate);
+				SoundManager::Instance().playSound("paddlehit", 0, 1);
 			}
 			else
 			{

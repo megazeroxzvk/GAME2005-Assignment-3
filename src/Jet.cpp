@@ -35,8 +35,12 @@ void Jet::draw()
 	TextureManager::Instance()->draw("jet", x, y, 0, 255, false, SDL_FLIP_NONE);
 	const auto renderer = Renderer::Instance()->getRenderer();
 	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-	SDL_RenderDrawRect(renderer, &boundingBox1);
-	SDL_RenderDrawRect(renderer, &boundingBox2);
+	if(debugView)
+	{
+		SDL_RenderDrawRect(renderer, &boundingBox1);
+		SDL_RenderDrawRect(renderer, &boundingBox2);
+	}
+	
 	//for(int i=0; i< 2; i++)
 	//{
 	//	SDL_RenderDrawRect(renderer, &boundingBox[i]);

@@ -162,23 +162,6 @@ void PlayScene::start()
 	addChild(m_pJet);
 
 	SoundManager::Instance().setSoundVolume(80);
-	
-	// Reset Button
-	//m_pBackButton = new Button("../Assets/textures/backButton.png", "backButton", BACK_BUTTON,{50,50},false);
-	//m_pBackButton->addEventListener(CLICK, [&]()-> void
-	//{
-	//	m_pBackButton->setActive(false);
-	//	TheGame::Instance()->changeSceneState(START_SCENE);
-	//});
-	//m_pBackButton->addEventListener(MOUSE_OVER, [&]()->void
-	//{
-	//		m_pBackButton->setAlpha(128);
-	//});
-	//m_pBackButton->addEventListener(MOUSE_OUT, [&]()->void
-	//{
-	//		m_pBackButton->setAlpha(255);
-	//});
-	//addChild(m_pBackButton);
 
 	/* Instructions Label */
 	m_pInstructionsLabel = new Label("Press the backtick (`) to Pause and invoke Simulation Control Menu", "Consolas");
@@ -236,7 +219,7 @@ void PlayScene::GUI_Function() const
 	//ImGui::DragFloat("Gravity",m_IMGUI_gravity, 0.5f, 5.0f, 25.0f);
 	
 	static float gravity = { 9.8f };
-	if (ImGui::SliderFloat("Gravity (m/s^2)", &gravity, 0.0f, 100.0f))
+	if (ImGui::SliderFloat("Gravity (m/s^2)", &gravity, 0.0f, 100.0f,"%.1f"))
 	{
 		for(int i = 0; i < m_pBulletPool->allBullets.size();i++)
 		{
@@ -245,7 +228,7 @@ void PlayScene::GUI_Function() const
 	}
 
 	static float velocity = { 0.0f };
-	if (ImGui::SliderFloat("Current Velocity (m/s)", &velocity, 0.0f, 30.0f))
+	if (ImGui::SliderFloat("Current Velocity (m/s)", &velocity, 0.0f, 30.0f, "%.1f"))
 	{
 		for (int i = 0; i < m_pBulletPool->allBullets.size(); i++)
 		{
@@ -254,20 +237,23 @@ void PlayScene::GUI_Function() const
 	}
 	
 	static float i_delay = { 400.0f };
-	if (ImGui::SliderFloat("Bullet Spawn Delay (ms)", &i_delay, 100.0f, 5000.0f))
+	if (ImGui::SliderFloat("Bullet Spawn Delay (ms)", &i_delay, 100.0f, 5000.0,"%.0f"))
 	{
 		delay = (i_delay * 0.001f);
 	}
 
 	static int numberOfBullets = { 10 };
-	if (ImGui::SliderInt("Number of Bullets", &numberOfBullets, 2, 25))
+	if (ImGui::SliderInt("Number of Bullets (units)", &numberOfBullets, 2, 25))
 	{
 		m_pBulletPool->bulletPoolResize(numberOfBullets);
 		labelNumberOfBullets = numberOfBullets;
 	}
 	
 	ImGui::Separator();
-	
+
+	static bool debugView;
+	ImGui::Checkbox("View Collision Boxes for Ship", &debugView);
+	m_pJet->debugView = debugView;
 	if (ImGui::Button("Reset"))
 	{
 		reset = true;

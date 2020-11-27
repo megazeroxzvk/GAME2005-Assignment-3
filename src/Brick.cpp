@@ -40,7 +40,7 @@ void Brick::draw()
 	// draw the plane sprite with simple propeller animation
 	//Util::DrawRect(getTransform()->position, getWidth(), getHeight(), { 1,0,0,1 });
 	//Util::DrawRect({ getTransform()->position.x + getWidth() * 0.5 - getHeight() * 0.5, getTransform()->position.y - getWidth() * 0.5 + getHeight() * 0.5}, getHeight(), getWidth(), { 0,1,0,1 });
-	if(rotate)
+	if (rotate)
 	{
 		TextureManager::Instance()->draw("brick", x, y, 90, 255, false, SDL_FLIP_NONE);
 	}
@@ -48,18 +48,15 @@ void Brick::draw()
 	{
 		TextureManager::Instance()->draw("brick", x, y, 0, 255, false, SDL_FLIP_NONE);
 	}
-	
+
 	const auto renderer = Renderer::Instance()->getRenderer();
-	if(!rotate)
+
+	if (debugView)
 	{
 		horizontalColliderBox->draw();
-	}
-	else
-	{
 		verticalColliderBox->draw();
 	}
-	
-	
+		
 	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);	
 	SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
 
@@ -121,7 +118,7 @@ void Brick::BrickMovementHandle(glm::vec2 mousePos)
 	getTransform()->position += getRigidBody()->velocity;
 
 	
-	
+	//std::cout << Util::magnitude(getRigidBody()->velocity) << std::endl;
 	checkBounds();
 	
 	

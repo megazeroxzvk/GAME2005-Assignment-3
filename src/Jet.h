@@ -25,6 +25,7 @@ public:
 	//void boundingBoxUpdate();
 	SDL_Rect getCollisionBox1();
 	SDL_Rect getCollisionBox2();
+	bool debugView;
 
 private:
 	SDL_Rect boundingBox1, boundingBox2;
