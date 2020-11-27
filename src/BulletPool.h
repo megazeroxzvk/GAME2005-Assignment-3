@@ -22,6 +22,8 @@ public:
 	void destroyPool();
 	void Update();
 	void Draw();
+
+	void bulletPoolResize(int new_size);
 	
 private:
 	Bullet* m_pBullets;

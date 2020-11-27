@@ -22,21 +22,19 @@ public:
 	virtual void start() override;
 	
 private:
-	Label* m_pStartLabel{};
-	Label* m_pInstructionsLabel{};
 
-	//Assignment 1:
+	//Assignment 3:
 	//Labels
 	Label* m_pTeamMember1{};
 	Label* m_pTeamMember2{};
-	Label* m_pAngryWookie{};
+	Label* m_pGameTitle{};
 
 	Background* m_pBackground;
 	
 	//Buttons
-	Button* m_pStartButton_1;
-
-	Button* m_pStartButton_2;
+	Button* m_pStartButton_Scene1;
+	Button* m_pRestartButton;
+	Button* m_pStartButton_Scene2;
 
 };
 

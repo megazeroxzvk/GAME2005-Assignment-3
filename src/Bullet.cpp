@@ -14,6 +14,10 @@ Bullet::Bullet()
 	setHeight(14);
 
 	getTransform()->position = glm::vec2(200.0f, 200.0f);
+	getRigidBody()->velocity = { 0,0 };
+	// gravity
+	m_gravity = 9.8f;
+	getRigidBody()->acceleration = { 0.0f, m_gravity };
 	setType(BULLET);
 	// reset to set values.
 	m_reset();
@@ -58,9 +62,6 @@ void Bullet::clean()
 void Bullet::m_reset()
 {
 	getRigidBody()->velocity = glm::vec2(0.0f, 0.0f);
-	//gravity
-	m_gravity = 9.8;
-	getRigidBody()->acceleration = glm::vec2(0.0f, m_gravity);
 	getTransform()->position = glm::vec2(Util::RandomRange(0, Config::SCREEN_WIDTH - 15), 0.0f);
 	getRigidBody()->isColliding = false;
 	active = false;
@@ -70,6 +71,8 @@ void Bullet::m_reset()
 void Bullet::m_moveBullet()
 {
 	getRigidBody()->velocity = getRigidBody()->velocity + (getRigidBody()->acceleration * deltaTime);
+	//std::cout << "Acceleration = " << getRigidBody()->acceleration.y << std::endl;
+	//std::cout << "Velocity = " << getRigidBody()->velocity.y << std::endl;
 	getTransform()->position = getTransform()->position + (getRigidBody()->velocity * deltaTime);
 }
 
@@ -79,6 +82,7 @@ void Bullet::m_moveBullet()
 void Bullet::m_setGravity(float value)
 {
 	m_gravity = value;
+	getRigidBody()->acceleration = glm::vec2(0.0f, m_gravity);
 }
 
 float Bullet::m_getGravity()

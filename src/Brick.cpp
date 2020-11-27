@@ -117,7 +117,7 @@ void Brick::BrickMovementHandle(glm::vec2 mousePos)
 	//std::cout << "Speed Factor = " << speedFactor << std::endl;
 	// Stuttering Issue when using direction vector.
 	getRigidBody()->velocity = { speedFactor * direction.x,speedFactor * direction.y};
-	std::cout << "Brick VelX = " << getRigidBody()->velocity.x << "Brick VelY = " << getRigidBody()->velocity.y << std::endl;
+	//std::cout << "Brick VelX = " << getRigidBody()->velocity.x << "Brick VelY = " << getRigidBody()->velocity.y << std::endl;
 	getTransform()->position += getRigidBody()->velocity;
 
 	

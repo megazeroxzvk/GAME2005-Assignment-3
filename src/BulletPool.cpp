@@ -5,12 +5,14 @@
 
 BulletPool::BulletPool()
 {
+	SoundManager::Instance().load("../Assets/audio/explosion.wav", "explosion", SOUND_SFX);
 }
 
 BulletPool::BulletPool(int size)
 {
 	createPool(size);
 	this->size = size;
+	SoundManager::Instance().load("../Assets/audio/explosion.wav", "explosion", SOUND_SFX);
 }
 
 BulletPool::~BulletPool()
@@ -79,6 +81,67 @@ void BulletPool::Draw()
 	}
 }
 
+// bullet resize trial.. hopefully it works..
+// it does!
+void BulletPool::bulletPoolResize(int new_size)
+{
+	
+	if(new_size > size)			// increasing bullet capacity
+	{
+		for(int i = size; i < new_size ; i++)
+		{
+			Bullet* bullet = new Bullet();
+			if(inactiveBullets.size() > 0)
+			{
+				bullet->getRigidBody()->velocity = inactiveBullets[0]->getRigidBody()->velocity;
+				bullet->getRigidBody()->acceleration = inactiveBullets[0]->getRigidBody()->acceleration;
+			}
+			else if (activeBullets.size() > 0)
+			{
+				bullet->getRigidBody()->velocity = activeBullets[0]->getRigidBody()->velocity;
+				bullet->getRigidBody()->acceleration = activeBullets[0]->getRigidBody()->acceleration;
+			}
+			allBullets.push_back(bullet);
+			inactiveBullets.push_back(bullet);
+			bullet->setBulletNumber(i);
+		}
+		size = new_size;
+	}
+	else if(new_size < size)	// decreasing bullet capacity
+	{
+		int difference = size - new_size;
+
+		// check inactive size first
+		if(inactiveBullets.size() > difference)
+		{
+			for (int i = 0; i < difference; i++)
+			{
+				inactiveBullets.pop_back();
+			}
+			size = new_size;
+		}
+		else
+		{
+			// prioritise to keep active ones stable, and remove as little active bullets as possible
+			for (int i = 0; i < inactiveBullets.size(); i++)
+			{
+				inactiveBullets.pop_back();
+				difference--;
+			}
+
+			for(int i = 0; i < difference; i++)
+			{
+				activeBullets.pop_back();
+			}
+			size = new_size;
+		}
+	}
+
+	inactiveBullets.shrink_to_fit();
+	activeBullets.shrink_to_fit();
+	allBullets.shrink_to_fit();
+}
+
 //--------------------
 
 void BulletPool::collisionCheck(Jet* jet)
@@ -102,6 +165,7 @@ void BulletPool::collisionCheck(Jet* jet)
 			// Colliding!!!!
 			activeBullets[i]->active = false;
 			std::cout << "Bullet " << activeBullets[i]->getBulletNumber() << " has collided!!" << std::endl;
+			SoundManager::Instance().playSound("explosion", 0, 1);
 		}
 
 		/*if (CollisionManager::AABBCheck(activeBullets[i], jet))

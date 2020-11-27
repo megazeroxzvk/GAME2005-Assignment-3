@@ -55,7 +55,7 @@ void PlayScene2::handleEvents()
 	}
 	else	//don't show mouse cursor and take mouse Input
 	{
-		//SDL_SetRelativeMouseMode(SDL_TRUE);
+		SDL_SetRelativeMouseMode(SDL_TRUE);
 		m_pBrick->BrickMovementHandle(EventManager::Instance().getMousePosition());
 	}
 

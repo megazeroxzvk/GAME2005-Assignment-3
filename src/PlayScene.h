@@ -47,28 +47,29 @@ private:
 	glm::vec2 m_mousePosition;
 
 	// Sprites
-	Ramp* m_pRamp;
-	Lootbox* m_pLootbox;
 	Jet* m_pJet;
 
+	// Pause
+	bool m_paused;
+	
 	// Bullet / BulletPool
 	BulletPool* m_pBulletPool;
-	const float delay = 0.4f;
+	mutable float delay = 0.4f;
 	float bulletSpawnTimer = 0;
 
 	
 	// UI Items
-	Button* m_pThrowButton;
-	Button* m_pResetButton;
+	Button* m_pBackButton;
 	Label* m_pInstructionsLabel;
 
-	//IMGUI adjusters
-	float* m_IMGUI_gravity;
-
+	// Status Labels
+	Label* m_pGravityLabel;
+	Label* m_pVelocityLabel;
+	Label* m_pDelayLabel;
+	Label* m_pNumberOfBulletsLabel;
+	mutable int labelNumberOfBullets = 10;
 
 	mutable bool reset = false;
-
-	
 
 	// Background
 	Background* m_pBackground;
